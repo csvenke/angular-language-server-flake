@@ -5,10 +5,12 @@
 Add repo to flake input
 
 ```nix
-inputs.angular-language-server.url = github:csvenke/angular-language-server-flake;
+inputs = {
+    angular-language-server.url = github:csvenke/angular-language-server-flake;
+};
 ```
 
-Apply the overlay
+Add the overlay
 
 ```nix
 nixpkgs.overlays = [
@@ -16,7 +18,7 @@ nixpkgs.overlays = [
 ];
 ```
 
-Use the package
+Add the package
 
 ```nix
 pkgs.mkShell {
