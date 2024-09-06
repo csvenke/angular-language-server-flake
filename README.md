@@ -1,29 +1,58 @@
-# angular-language-server
+Nix flake that provides `angular-language-server` not found in nixpkgs.
 
 ## Usage
 
-Add repo to flake input
+### With nix profile
 
-```nix
-inputs = {
-    angular-language-server.url = github:csvenke/angular-language-server-flake;
-};
+```bash
+nix profile install github:csvenke/angular-language-server-flake
+angular-language-server --stdio
 ```
 
-Add the overlay
+### With nix run
 
-```nix
-nixpkgs.overlays = [
-  inputs.angular-language-server.overlays.default
-];
+```bash
+nix run github:csvenke/angular-language-server-flake -- --stdio
 ```
 
-Add the package
+### With nix develop
+
+```bash
+nix develop github:csvenke/angular-language-server-flake
+angular-language-server --stdio
+```
+
+### With flake.nix
 
 ```nix
-pkgs.mkShell {
-    packages = [
-        pkgs.angular-language-server
-    ];
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    angular-language-server.url = "github:csvenke/angular-language-server-flake";
+  };
+
+  outputs = inputs@{ flake-parts, nixpkgs, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = nixpkgs.lib.systems.flakeExposed;
+      perSystem = { pkgs, system, ... }:
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [
+              inputs.angular-language-server.overlays.default
+            ];
+          };
+
+          shell = pkgs.mkShell {
+            packages = [
+              pkgs.angular-language-server
+            ];
+          };
+        in
+        {
+          devShells.default = shell;
+        };
+    };
 }
 ```
