@@ -15,24 +15,59 @@
       perSystem = { config, system, pkgs, ... }:
         let
           nodejs = pkgs.nodejs;
-          angular-language-server = import ./default.nix {
-            inherit pkgs;
-            inherit system;
-            inherit nodejs;
-          };
+
+          mkWrapper = path:
+            let
+              ngserver = import path {
+                inherit pkgs;
+                inherit system;
+                inherit nodejs;
+              };
+              inherit (ngserver) package nodeDependencies;
+            in
+            pkgs.writeShellApplication {
+              name = "angular-language-server";
+              runtimeInputs = [ package ];
+              text = ''
+                ngserver \
+                  --ngProbeLocations "${nodeDependencies}/lib/node_modules" \
+                  --tsProbeLocations "${nodeDependencies}/lib/node_modules" \
+                  "$@"
+              '';
+            };
+
+
+          v15 = mkWrapper ./packages/v15;
+          v18 = mkWrapper ./packages/v18;
         in
         {
           overlayAttrs = {
-            inherit angular-language-server;
+            angular-language-server_15 = v15;
+            angular-language-server_18 = v18;
+            angular-language-server = v18;
           };
           packages = {
-            default = angular-language-server;
+            angular-language-server_15 = v15;
+            angular-language-server_18 = v18;
+            default = v18;
           };
           devShells = {
+            v15 = pkgs.mkShell {
+              packages = [
+                nodejs
+                v15
+              ];
+            };
+            v18 = pkgs.mkShell {
+              packages = [
+                nodejs
+                v18
+              ];
+            };
             default = pkgs.mkShell {
               packages = [
                 nodejs
-                angular-language-server
+                v18
               ];
             };
           };
