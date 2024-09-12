@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('@angular/language-server');
+require("@angular/language-server");
