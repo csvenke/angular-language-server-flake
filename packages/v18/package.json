@@ -7,7 +7,7 @@
     "build": "true"
   },
   "dependencies": {
-    "@angular/language-server": "^18.2.0",
-    "typescript": "^5.5.4"
+    "@angular/language-server": "18.1.x || 18.2.x",
+    "typescript": ">=5.4.0 <5.6.0"
   }
 }

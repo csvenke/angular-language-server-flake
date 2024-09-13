@@ -36,7 +36,6 @@
               '';
             };
 
-
           v15 = mkWrapper ./packages/v15;
           v18 = mkWrapper ./packages/v18;
         in
@@ -53,22 +52,13 @@
           };
           devShells = {
             v15 = pkgs.mkShell {
-              packages = [
-                nodejs
-                v15
-              ];
+              packages = [ nodejs v15 ];
             };
             v18 = pkgs.mkShell {
-              packages = [
-                nodejs
-                v18
-              ];
+              packages = [ nodejs v18 ];
             };
             default = pkgs.mkShell {
-              packages = [
-                nodejs
-                v18
-              ];
+              packages = [ nodejs v18 ];
             };
           };
         };
