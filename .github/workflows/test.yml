@@ -2,9 +2,10 @@ name: "test"
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
+    paths:
+      - "packages/**"
+      - "flake.lock"
+      - "flake.nix"
 
 jobs:
   nix-develop:
