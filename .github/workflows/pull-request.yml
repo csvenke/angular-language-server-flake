@@ -1,0 +1,27 @@
+name: "pull-request"
+
+on:
+  pull_request:
+
+jobs:
+  test-develop:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - run: nix develop
+
+  automerge:
+    if: contains(github.event.pull_request.labels.*.name, 'automerge')
+    needs: [test-develop]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - run: gh pr merge --rebase --auto
+    env:
+      GH_TOKEN: ${{ secrets.GH_REPO_PAT }}
